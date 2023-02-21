@@ -104,13 +104,15 @@ THE SOFTWARE.
   pcf_cmap_char_index( FT_CMap    pcfcmap,  /* PCF_CMap */
                        FT_UInt32  charcode )
   {
-    PCF_Enc    enc = ( (PCF_CMap)pcfcmap )->enc;
+    PCF_Enc  enc = ( (PCF_CMap)pcfcmap )->enc;
+
     FT_UInt32  i = ( charcode >> 8   ) - enc->firstRow;
     FT_UInt32  j = ( charcode & 0xFF ) - enc->firstCol;
     FT_UInt32  h = enc->lastRow - enc->firstRow + 1;
     FT_UInt32  w = enc->lastCol - enc->firstCol + 1;
 
 
+    /* wrapped around "negative" values are also rejected */
     if ( i >= h || j >= w )
       return 0;
 
@@ -124,13 +126,16 @@ THE SOFTWARE.
   {
     PCF_Enc    enc = ( (PCF_CMap)pcfcmap )->enc;
     FT_UInt32  charcode = *acharcode + 1;
+
     FT_UInt32  i = ( charcode >> 8   ) - enc->firstRow;
     FT_UInt32  j = ( charcode & 0xFF ) - enc->firstCol;
     FT_UInt32  h = enc->lastRow - enc->firstRow + 1;
     FT_UInt32  w = enc->lastCol - enc->firstCol + 1;
-    FT_UInt    result = 0;
+
+    FT_UInt  result = 0;
 
 
+    /* adjust wrapped around "negative" values */
     if ( (FT_Int32)i < 0 )
       i = 0;
     if ( (FT_Int32)j < 0 )
